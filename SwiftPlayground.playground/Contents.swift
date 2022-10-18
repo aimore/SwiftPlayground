@@ -67,4 +67,13 @@ import Foundation
 //MARK: DEPENDENCY INJECTION
 
 //constructor injection
-testDataManagerGetData()
+//testDataManagerGetData()
+
+//propert injection
+//testDataManager2GetData()
+
+//MARK: SINGLETON PATTERN
+//globalSingleton()
+
+//Refactoring singleton for Unit test
+//testLoadingData()

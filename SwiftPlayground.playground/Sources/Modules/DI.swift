@@ -40,7 +40,8 @@ final class RealDataManager: NetworkService {
     }
 }
 
-//CONSTRUCTOR INJECTION
+//MARK: CONSTRUCTOR INJECTION
+
 class DataManager {
     let dataService: NetworkService
     init(dataService: NetworkService) {
@@ -71,4 +72,104 @@ public func testDataManagerGetData() {
     } else {
         print("TEST FAILED")
     }
+}
+
+
+//MARK: PROPERTY INJECTION
+
+class DataManager2 {
+    var dataService: NetworkService = RealDataManager()
+    func getData() -> String {
+        print("Requesting mock data.....")
+        return "DATA"
+    }
+}
+
+
+// TEST PROPERTY INJECTION
+public func testDataManager2GetData() {
+    let manager = DataManager2()
+    manager.dataService = MockDataManager()
+    let mockData = manager.dataService.getData()
+    if(mockData == "MOCK DATA") {
+        print("TEST PASSED")
+    } else {
+        print("TEST FAILED")
+    }
+}
+
+//The singleton pattern guarantees that only one instance of a class is instantiated.
+//Static Property and Private Initializer
+class NetworkServiceSingleton {
+    
+    static let shared = NetworkServiceSingleton()
+    
+    //DON'T FORGET THE PRIVATE INIT!
+    //This makes sure your singletons are truly unique and prevents outside objects from creating their own instances of your class through virtue of access control.
+    //Since all objects come with a default public initializer in Swift, you need to override your init and make it private
+    private init(){}
+    
+    func getData() -> String {
+        print("Requesting data.....")
+        return "REAL DATA"
+    }
+}
+
+
+class DataManagerUsingSingleton {
+    func getData() -> String {
+        let data = NetworkServiceSingleton.shared.getData()
+        print(data)
+        return data
+    }
+}
+
+public func globalSingleton() {
+    let data = NetworkServiceSingleton.shared.getData()
+    print(data)
+}
+
+//How to test it? It will need a bit of refactoring...
+
+//1. Abstract into a protocol
+protocol NetworkEngine {
+    func performRequest() -> String
+}
+
+extension NetworkServiceSingleton: NetworkEngine {
+    func performRequest() -> String {
+        return NetworkServiceSingleton.shared.getData()
+    }
+}
+
+// Use the protocol with the singleton as the default
+class DataLoader {
+
+    private let engine: NetworkEngine
+
+    init(engine: NetworkEngine = NetworkServiceSingleton.shared) {
+        self.engine = engine
+    }
+
+    func load() -> String {
+        return engine.performRequest()
+    }
+}
+
+//Test
+public func testLoadingData() {
+    //3. Mock the protocol in your tests
+    class NetworkEngineMock: NetworkEngine {
+        func performRequest() -> String {
+            print("Requesting mock data.....")
+            return "MOCK DATA"
+        }
+        
+    }
+
+    let engine = NetworkEngineMock()
+    let loader = DataLoader(engine: engine)
+    
+    let test = loader.load()
+    print(test)
 }

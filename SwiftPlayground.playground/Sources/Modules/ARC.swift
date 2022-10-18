@@ -164,7 +164,7 @@ class Blog {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.publishedPosts.append(post)
             //If we would change the publish method to include a weak reference instead:
-            print("Published post count is now: \(self?.publishedPosts.count)")
+            print("Published post count is now: \(String(describing: self?.publishedPosts.count))")
         }
     }
     
