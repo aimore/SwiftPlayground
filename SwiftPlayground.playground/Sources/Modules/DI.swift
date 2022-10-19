@@ -98,6 +98,8 @@ public func testDataManager2GetData() {
     }
 }
 
+
+//MARK: SINGLETON
 //The singleton pattern guarantees that only one instance of a class is instantiated.
 //Static Property and Private Initializer
 class NetworkServiceSingleton {
@@ -156,8 +158,8 @@ class DataLoader {
     }
 }
 
-//Test
-public func testLoadingData() {
+//Test Singleton using Mock
+public func testSingletonMock() {
     //3. Mock the protocol in your tests
     class NetworkEngineMock: NetworkEngine {
         func performRequest() -> String {
@@ -172,4 +174,108 @@ public func testLoadingData() {
     
     let test = loader.load()
     print(test)
+}
+
+//MARK: DI Container
+
+protocol DIContainerProtocol {
+  func register<Service>(type: Service.Type, service: Any)
+  func resolve<Service>(type: Service.Type) -> Service?
+}
+
+final class DIContainer: DIContainerProtocol {
+
+  static let shared = DIContainer()
+  private init() {}
+
+  var services: [String: Any] = [:]
+
+  func register<Service>(type: Service.Type, service: Any) {
+      services["\(type)"] = service
+      print(service)
+  }
+
+  func resolve<Service>(type: Service.Type) -> Service? {
+      let service = services["\(type)"] as? Service
+      print(service)
+      return service
+  }
+    
+}
+
+// EXAMPLE
+protocol UserServiceProtocol {
+    func fetchUsers()
+}
+
+protocol PaymentServiceProtocol {
+    func fetchPayments()
+}
+
+class UserService: UserServiceProtocol {
+    func fetchUsers() {
+        print("Users fetching...")
+    }
+}
+
+class PaymentService: PaymentServiceProtocol {
+    func fetchPayments() {
+        print("Payments fetching...")
+    }
+}
+
+//Not using DI Container
+class ViewModel1 {
+
+    private let userService: UserServiceProtocol
+    private let paymentService: PaymentServiceProtocol
+
+    init(userService: UserServiceProtocol, paymentService: PaymentServiceProtocol) {
+        self.userService = userService
+        self.paymentService = paymentService
+    }
+    
+    func fetchUsers() {
+        userService.fetchUsers()
+    }
+    
+    func fetchPayments() {
+        paymentService.fetchPayments()
+    }
+
+}
+
+//using DI Container
+class ViewModel2 {
+
+    private let userService: UserServiceProtocol?
+    private let paymentService: PaymentServiceProtocol?
+    
+    init(userService: UserServiceProtocol = DIContainer.shared.resolve(type: UserServiceProtocol.self)!,
+         paymentService: PaymentServiceProtocol = DIContainer.shared.resolve(type: PaymentService.self)!) {
+        self.userService = userService
+        self.paymentService = paymentService
+    }
+
+
+    func fetchUsers() {
+        userService?.fetchUsers()
+    }
+    
+    func fetchPayments() {
+        paymentService?.fetchPayments()
+    }
+
+}
+
+public func registerObjects() {
+    let container = DIContainer.shared
+    container.register(type: UserServiceProtocol.self, service: UserService())
+}
+
+public func testDiContainer() {
+//    registerObjects()
+    let a = ViewModel2()
+    a.fetchUsers()
+    a.fetchPayments()
 }

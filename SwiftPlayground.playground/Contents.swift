@@ -76,4 +76,5 @@ import Foundation
 //globalSingleton()
 
 //Refactoring singleton for Unit test
-//testLoadingData()
+//testSingletonMock()
+
