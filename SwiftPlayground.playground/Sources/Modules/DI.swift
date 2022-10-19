@@ -197,7 +197,7 @@ final class DIContainer: DIContainerProtocol {
 
   func resolve<Service>(type: Service.Type) -> Service? {
       let service = services["\(type)"] as? Service
-      print(service)
+      print(service as Any)
       return service
   }
     
@@ -274,7 +274,7 @@ public func registerObjects() {
 }
 
 public func testDiContainer() {
-//    registerObjects()
+    registerObjects()
     let a = ViewModel2()
     a.fetchUsers()
     a.fetchPayments()

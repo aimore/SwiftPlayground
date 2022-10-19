@@ -78,3 +78,37 @@ import Foundation
 //Refactoring singleton for Unit test
 //testSingletonMock()
 
+//MARK: ACCESS LEVELS
+//Open
+//class Test : OpenClass {
+//    override init() {}
+//    override func testFunc() {
+//        print("No value")
+//    }
+//}
+//let b = OpenClass()
+//b.testFunc()
+//let a = Test()
+//a.testFunc()
+
+//PUBLIC
+// Public — This is the same as open, the only difference is you can’t subclass or override outside the module(target).
+//Cannot inherit from non-open class 'PublicClass' outside of its defining module
+//class Test2 : PublicClass {
+//}
+//testPublic()
+
+//PRIVATE and INTERNAL
+//let a = PrivateTest()
+//'user' is inaccessible due to 'private' protection level
+//a.user
+
+// File-private
+/*
+ File-private - This is the same as private, the only difference is it allows access in a subclass with in the same file.
+ */
+// it allows access in a subclass with in the same file.
+//filePrivateTest()
+//let fp = TestFilePrivate()
+//'user' is inaccessible due to 'fileprivate' protection level
+//fp.user
